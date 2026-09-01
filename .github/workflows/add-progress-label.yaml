@@ -1,22 +1,24 @@
-name: Add Label on Milestone Assignment
+name: Add in-progress label on milestone assignment
 
 on:
   issues:
-    types:
-      - milestoned
+    types: [milestoned]
+
+permissions:
+  contents: read
 
 jobs:
   add-label:
     runs-on: ubuntu-latest
     permissions:
       issues: write
-    steps: 
-    - uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.issues.addLabels({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            issue_number: context.issue.number,
-            labels: ["status: in progress"]
-          })
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ["status: in progress"]
+            });
