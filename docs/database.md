@@ -14,7 +14,8 @@ Die Windows-EXE speichert ihre Daten dauerhaft unter
 `%LOCALAPPDATA%\ZuBbbearbeiten\todo.db`, statt im temporären Entpackordner.
 
 Sind `DBUSER`, `DBPASS`, `DBHOST` und `DBNAME` gesetzt, erstellt die Anwendung
-eine PostgreSQL-Verbindung. `DBPORT` ist optional und standardmässig `5432`;
+eine PostgreSQL-Verbindung. `DBHOST` akzeptiert auch das Azure-Format
+`host:port`. `DBPORT` ist optional und standardmässig `5432`;
 `DBSSLMODE` ist standardmässig `prefer`. Alternativ wird `DATABASE_URL`
 akzeptiert. Zugangsdaten gehören nur in Umgebungsvariablen oder eine ignorierte
 `.env`-Datei. `.env.example` dokumentiert ausschliesslich Platzhalter.
