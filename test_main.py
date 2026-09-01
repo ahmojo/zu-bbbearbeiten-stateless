@@ -49,3 +49,32 @@ def test_update_returns_not_found_for_unknown_todo(client):
     response = client.get("/update/99")
 
     assert response.status_code == 404
+
+
+def test_download_returns_csv_attachment(client):
+    helper.add("Export testen", "2026-09-12", "Qualität")
+
+    response = client.get("/download")
+
+    assert response.status_code == 200
+    assert response.mimetype == "text/csv"
+    assert response.headers["Content-Disposition"] == (
+        "attachment; filename=traktanden.csv"
+    )
+    assert "Export testen" in response.text
+
+
+def test_download_neutralizes_spreadsheet_formula(client):
+    client.post(
+        "/add",
+        data={
+            "title": "=1+1",
+            "deadline": "2026-09-12",
+            "description": '=HYPERLINK("https://example.invalid")',
+        },
+    )
+
+    response = client.get("/download")
+
+    assert "'=1+1" in response.text
+    assert "'=HYPERLINK" in response.text

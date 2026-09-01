@@ -1,4 +1,6 @@
 import datetime
+import csv
+import io
 
 import pytest
 
@@ -63,3 +65,41 @@ def test_update_toggles_completion():
 
     helper.update(0)
     assert helper.get(0).is_completed is False
+
+
+def test_get_csv_quotes_commas_quotes_and_newlines():
+    helper.add(
+        'Bericht, "final"',
+        "2026-09-02",
+        "Schule, Arbeit",
+        "Erste Zeile\nZweite Zeile",
+    )
+
+    rows = list(csv.reader(io.StringIO(helper.get_csv())))
+
+    assert rows == [
+        ["Titel", "Termin", "Kategorie", "Beschreibung", "Erledigt"],
+        [
+            'Bbbericht, "final"',
+            "2026-09-02",
+            "Schule, Arbeit",
+            "Erste Zeile\nZweite Zeile",
+            "Nein",
+        ],
+    ]
+
+
+@pytest.mark.parametrize("prefix", ["=", "+", "-", "@"])
+def test_get_csv_neutralizes_spreadsheet_formulas(prefix):
+    helper.add(
+        f"{prefix}1+1",
+        "2026-09-02",
+        f"{prefix}Kategorie",
+        f"{prefix}Beschreibung",
+    )
+
+    row = list(csv.reader(io.StringIO(helper.get_csv())))[1]
+
+    assert row[0] == f"'{prefix}1+1"
+    assert row[2] == f"'{prefix}Kategorie"
+    assert row[3] == f"'{prefix}Beschreibung"

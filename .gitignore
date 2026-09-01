@@ -6,6 +6,8 @@ __pycache__/
 pytest-cache-files-*/
 .coverage
 htmlcov/
+build/
+dist/
 
 .venv/
 venv/
@@ -17,5 +19,6 @@ env/
 .playwright-cli/
 
 task_work/
+*.spec.bak
 *.log
 *~

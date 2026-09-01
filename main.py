@@ -1,5 +1,5 @@
 import helper
-from flask import Flask, abort, redirect, render_template, request, url_for
+from flask import Flask, Response, abort, redirect, render_template, request, url_for
 
 app = Flask(__name__)
 
@@ -30,3 +30,16 @@ def update(index):
     except IndexError:
         abort(404)
     return redirect(url_for("index"))
+
+
+@app.route("/download")
+def download():
+    return Response(
+        helper.get_csv(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=traktanden.csv"},
+    )
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
