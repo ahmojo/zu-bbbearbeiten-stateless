@@ -1,17 +1,12 @@
-import datetime
 import csv
+import datetime
 import io
 
 import pytest
 
 import helper
 
-
-@pytest.fixture(autouse=True)
-def clear_items():
-    helper.items.clear()
-    yield
-    helper.items.clear()
+pytestmark = pytest.mark.usefixtures("app")
 
 
 def test_add_stores_todo_details():
@@ -23,6 +18,7 @@ def test_add_stores_todo_details():
     )
 
     assert isinstance(todo, helper.Todo)
+    assert todo.id is not None
     assert todo.title == "Bbbuch lesen"
     assert todo.date == datetime.date(2026, 9, 2)
     assert todo.category == "Schule"
@@ -47,9 +43,8 @@ def test_add_sorts_todos_by_date():
     for title, date in todos:
         helper.add(title, date)
 
-    assert [todo.date for todo in helper.items] == sorted(
-        todo.date for todo in helper.items
-    )
+    dates = [todo.date for todo in helper.get_all()]
+    assert dates == sorted(dates)
 
 
 def test_add_rejects_missing_title():
@@ -58,13 +53,18 @@ def test_add_rejects_missing_title():
 
 
 def test_update_toggles_completion():
-    helper.add("Testen", "2026-09-02")
+    todo = helper.add("Testen", "2026-09-02")
 
-    helper.update(0)
-    assert helper.get(0).is_completed is True
+    helper.update(todo.id)
+    assert helper.get(todo.id).is_completed is True
 
-    helper.update(0)
-    assert helper.get(0).is_completed is False
+    helper.update(todo.id)
+    assert helper.get(todo.id).is_completed is False
+
+
+def test_update_rejects_unknown_id():
+    with pytest.raises(IndexError):
+        helper.update(999)
 
 
 def test_get_csv_quotes_commas_quotes_and_newlines():

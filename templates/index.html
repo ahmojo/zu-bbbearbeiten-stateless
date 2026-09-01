@@ -57,10 +57,10 @@
                 {% endif %}
 
                 {% if item.is_completed %}
-                <a class="ui green right corner label" href="/update/{{ loop.index0 }}"
+                <a class="ui green right corner label" href="/update/{{ item.id }}"
                     aria-label="Als offen markieren"><i class="check icon"></i></a>
                 {% else %}
-                <a class="ui red right corner label" href="/update/{{ loop.index0 }}"
+                <a class="ui red right corner label" href="/update/{{ item.id }}"
                     aria-label="Als erledigt markieren"><i class="square outline icon"></i></a>
                 {% endif %}
             </article>

@@ -2,6 +2,8 @@
 .github
 .venv
 .env
+instance
+*.db
 __pycache__
 .pytest_cache
 build
@@ -9,4 +11,5 @@ dist
 docs
 task_work
 test_*.py
+conftest.py
 *.log

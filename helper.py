@@ -1,20 +1,22 @@
 import csv
 import datetime
 import io
-import operator
-from dataclasses import dataclass
+
+from sqlalchemy import Boolean, Date, String, Text
+from sqlalchemy.orm import Mapped, mapped_column
+
+from database import db
 
 
-@dataclass
-class Todo:
-    title: str
-    date: datetime.date
-    category: str = "Allgemein"
-    description: str = ""
-    is_completed: bool = False
+class Todo(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    date: Mapped[datetime.date] = mapped_column(Date, nullable=False, index=True)
+    category: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    is_completed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
 
-items: list[Todo] = []
 CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
 
 
@@ -44,28 +46,34 @@ def add(
         category=category.strip() or "Allgemein",
         description=description.strip(),
     )
-    items.append(todo)
-    items.sort(key=operator.attrgetter("date"))
+    db.session.add(todo)
+    db.session.commit()
     return todo
 
 
 def get_all() -> list[Todo]:
-    return items
+    query = db.select(Todo).order_by(Todo.date, Todo.id)
+    return list(db.session.execute(query).scalars())
 
 
-def get(index: int) -> Todo:
-    return items[index]
+def get(todo_id: int) -> Todo:
+    todo = db.session.get(Todo, todo_id)
+    if todo is None:
+        raise IndexError(todo_id)
+    return todo
 
 
-def update(index: int) -> None:
-    items[index].is_completed = not items[index].is_completed
+def update(todo_id: int) -> None:
+    todo = get(todo_id)
+    todo.is_completed = not todo.is_completed
+    db.session.commit()
 
 
 def get_csv() -> str:
     output = io.StringIO(newline="")
     writer = csv.writer(output)
     writer.writerow(["Titel", "Termin", "Kategorie", "Beschreibung", "Erledigt"])
-    for item in items:
+    for item in get_all():
         writer.writerow(
             [
                 _csv_safe(item.title),
