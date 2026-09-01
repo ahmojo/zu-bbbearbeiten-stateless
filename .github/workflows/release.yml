@@ -74,17 +74,11 @@ jobs:
     environment: production
     permissions:
       contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Sign in to Azure with GitHub OIDC
-        uses: azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac # v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID_STATEFUL }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Deploy tagged application
         uses: azure/webapps-deploy@b686016b4de8820a23519503685d8d03fbfa03a6 # v3
         with:
           app-name: zu-bbbearbeiten-stateful-ahmojo
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_STATEFUL }}
           package: .

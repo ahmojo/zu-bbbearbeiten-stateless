@@ -39,7 +39,7 @@ gunicorn --bind=0.0.0.0 --timeout 600 main:app
 zuerst die Tests aus. Nur bei erfolgreichen Tests werden GitHub Release,
 Windows-EXE, GHCR-Image und die Azure-Web-App ausgeliefert.
 
-Die Anmeldung verwendet GitHub OIDC statt eines langfristigen Publish-Profils.
-Die föderierte Identität ist auf das GitHub-Environment `production` und die
-Rolle `Website Contributor` dieser einzelnen Web App begrenzt. Client-, Tenant-
-und Subscription-ID sind nicht geheim und liegen als GitHub-Variablen vor.
+Wie im Azure Deployment Center vorgesehen, verwendet der Workflow das auf diese
+Web App begrenzte Publish-Profil. Es liegt ausschließlich als verschlüsseltes
+GitHub-Secret `AZURE_WEBAPP_PUBLISH_PROFILE_STATEFUL` vor und wird nur an den
+Deployment-Schritt übergeben. Der Wert darf weder in Git noch in Logs erscheinen.
