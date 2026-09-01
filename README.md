@@ -1,6 +1,6 @@
 # Zu Bbbearbeiten
 
-Eine kleine zustandslose Flask-Anwendung zum Erfassen und Erledigen von
+Eine kleine Flask-Anwendung zum Erfassen und Erledigen von
 Traktanden. Ein Traktandum besitzt einen Titel, einen Termin, eine Kategorie und
 eine optionale Beschreibung. Die Übersicht sortiert alle Einträge chronologisch
 und bietet einen CSV-Export.
@@ -17,8 +17,12 @@ python -m flask run
 
 Danach ist die Anwendung unter <http://127.0.0.1:5000> erreichbar. Ohne
 angegebenen Termin verwendet die Anwendung automatisch das Datum in einer Woche.
-Die Daten liegen absichtlich nur im Arbeitsspeicher und gehen bei einem Neustart
-verloren.
+Ohne weitere Konfiguration speichert die Anwendung dauerhaft in
+`instance/todo.db` (SQLite).
+
+Für lokales PostgreSQL stehen `compose.yaml` und `.env.example` bereit. Details
+zu Konfiguration, Modell und Testisolation stehen in der
+[Datenbank-Dokumentation](docs/database.md).
 
 ## Entwicklung
 

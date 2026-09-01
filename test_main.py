@@ -1,20 +1,9 @@
 import pytest
+from sqlalchemy import URL
 
 import helper
-from main import app
-
-
-@pytest.fixture(autouse=True)
-def clear_items():
-    helper.items.clear()
-    yield
-    helper.items.clear()
-
-
-@pytest.fixture
-def client():
-    app.config.update(TESTING=True)
-    return app.test_client()
+import main
+from database import db
 
 
 def test_add_redirects_and_renders_todo(client):
@@ -51,8 +40,24 @@ def test_update_returns_not_found_for_unknown_todo(client):
     assert response.status_code == 404
 
 
-def test_download_returns_csv_attachment(client):
-    helper.add("Export testen", "2026-09-12", "Qualität")
+def test_update_uses_stable_database_id(client, app):
+    with app.app_context():
+        later = helper.add("Später", "2026-10-01")
+        earlier = helper.add("Früher", "2026-09-01")
+        earlier_id = earlier.id
+        later_id = later.id
+
+    response = client.get(f"/update/{later_id}")
+
+    assert response.status_code == 302
+    with app.app_context():
+        assert helper.get(later_id).is_completed is True
+        assert helper.get(earlier_id).is_completed is False
+
+
+def test_download_returns_csv_attachment(client, app):
+    with app.app_context():
+        helper.add("Export testen", "2026-09-12", "Qualität")
 
     response = client.get("/download")
 
@@ -78,3 +83,40 @@ def test_download_neutralizes_spreadsheet_formula(client):
 
     assert "'=1+1" in response.text
     assert "'=HYPERLINK" in response.text
+
+
+def test_data_persists_between_sessions(app):
+    with app.app_context():
+        helper.add("Dauerhaft", "2026-09-20")
+        db.session.remove()
+        assert [todo.title for todo in helper.get_all()] == ["Dauerhaft"]
+
+
+def test_database_uri_uses_postgresql_environment(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DBUSER", "todo-user")
+    monkeypatch.setenv("DBPASS", "p@ss:/word")
+    monkeypatch.setenv("DBHOST", "database.example")
+    monkeypatch.setenv("DBNAME", "todo-db")
+    monkeypatch.setenv("DBPORT", "5433")
+    monkeypatch.setenv("DBSSLMODE", "require")
+
+    uri = main._database_uri()
+
+    assert isinstance(uri, URL)
+    assert uri.username == "todo-user"
+    assert uri.password == "p@ss:/word"
+    assert uri.host == "database.example"
+    assert uri.port == 5433
+    assert uri.database == "todo-db"
+    assert uri.query["sslmode"] == "require"
+
+
+def test_database_uri_rejects_partial_environment(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    for name in ("DBUSER", "DBPASS", "DBHOST", "DBNAME"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("DBHOST", "database.example")
+
+    with pytest.raises(RuntimeError, match="DBUSER"):
+        main._database_uri()

@@ -8,6 +8,10 @@
 | Kontinuierliche Auslieferung/Bereitstellung | Continuous Delivery/Deployment (CD) | Geprüfte Änderungen werden automatisiert für eine Veröffentlichung vorbereitet oder direkt in eine Zielumgebung ausgeliefert. |
 | Auslieferung | Deployment | Eine bestimmte Softwareversion wird in einer Zielumgebung installiert und gestartet. |
 | Infrastruktur als Code | Infrastructure as Code (IaC) | Infrastruktur wird in versionierten, wiederholbar ausführbaren Konfigurationsdateien beschrieben. |
+| Infrastruktur | Infrastructure | Die technischen Ressourcen wie Server, Netzwerke, Datenbanken und Laufzeitumgebungen, auf denen eine Anwendung betrieben wird. |
+| Umgebungsabweichung | Environment drift | Der unbeabsichtigte Unterschied zwischen Umgebungen, der entsteht, wenn Infrastruktur manuell und nicht reproduzierbar verändert wird. |
+| HashiCorp Configuration Language | HCL | Eine deklarative Konfigurationssprache, die beispielsweise Terraform verwendet, um gewünschten Infrastrukturzustand lesbar zu beschreiben. |
+| Objekt-relationaler Mapper | Object-Relational Mapper (ORM) | Eine Abbildung zwischen Klassen und Datenbanktabellen, mit der Daten über Programmobjekte abgefragt und verändert werden. |
 | Veröffentlichungszyklus | Release cycle | Der wiederkehrende Ablauf von Planung, Entwicklung, Prüfung und Veröffentlichung einer Version. |
 | Markteinführungszeit | Time to Market | Die Zeit von einer Idee oder Anforderung bis zur nutzbaren Veröffentlichung. |
 | Versionskontrolle | Version Control | Ein System, das Änderungen an Dateien nachvollziehbar speichert und parallele Entwicklung ermöglicht. |
@@ -48,3 +52,10 @@ Eine Versionsnummer im Format `MAJOR.MINOR.PATCH` beschreibt die Wirkung einer
 rückwärtskompatible Funktionen und `PATCH` für rückwärtskompatible Fehlerbehebungen.
 Versionen `0.y.z` kennzeichnen eine frühe Entwicklungsphase, in der sich die
 Schnittstelle noch verändern kann.
+
+## Vorteile von Infrastructure as Code
+
+IaC macht Infrastrukturänderungen versionierbar, überprüfbar und wiederholbar.
+Automatische Ausführung reduziert manuelle Fehler und Environment Drift. Dieselbe
+Beschreibung kann konsistente Entwicklungs-, Test- und Produktionsumgebungen
+erzeugen und im Pull Request gemeinsam mit dem Anwendungscode geprüft werden.

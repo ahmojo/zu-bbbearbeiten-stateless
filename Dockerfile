@@ -7,12 +7,15 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-RUN addgroup --system app && adduser --system --ingroup app app
+RUN addgroup --system app \
+    && adduser --system --ingroup app --home /home/app app \
+    && mkdir -p /app/instance \
+    && chown app:app /app/instance
 
 COPY requirements.txt .
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
-COPY helper.py main.py ./
+COPY database.py helper.py main.py ./
 COPY templates ./templates
 
 USER app

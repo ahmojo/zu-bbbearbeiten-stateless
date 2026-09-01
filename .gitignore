@@ -13,6 +13,8 @@ dist/
 venv/
 env/
 .env
+instance/
+*.db
 
 .vscode/
 .idea/
