@@ -1,4 +1,6 @@
+import csv
 import datetime
+import io
 import operator
 from dataclasses import dataclass
 
@@ -13,6 +15,7 @@ class Todo:
 
 
 items: list[Todo] = []
+CSV_FORMULA_PREFIXES = ("=", "+", "-", "@")
 
 
 def one_week_from_today() -> datetime.date:
@@ -56,3 +59,26 @@ def get(index: int) -> Todo:
 
 def update(index: int) -> None:
     items[index].is_completed = not items[index].is_completed
+
+
+def get_csv() -> str:
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(["Titel", "Termin", "Kategorie", "Beschreibung", "Erledigt"])
+    for item in items:
+        writer.writerow(
+            [
+                _csv_safe(item.title),
+                item.date.isoformat(),
+                _csv_safe(item.category),
+                _csv_safe(item.description),
+                "Ja" if item.is_completed else "Nein",
+            ]
+        )
+    return output.getvalue()
+
+
+def _csv_safe(value: str) -> str:
+    if value.startswith(CSV_FORMULA_PREFIXES):
+        return f"'{value}"
+    return value

@@ -2,7 +2,8 @@
 
 Eine kleine zustandslose Flask-Anwendung zum Erfassen und Erledigen von
 Traktanden. Ein Traktandum besitzt einen Titel, einen Termin, eine Kategorie und
-eine optionale Beschreibung. Die Übersicht sortiert alle Einträge chronologisch.
+eine optionale Beschreibung. Die Übersicht sortiert alle Einträge chronologisch
+und bietet einen CSV-Export.
 
 ## Lokal starten
 
@@ -32,6 +33,9 @@ python -m pytest
 Die Pre-Commit-Konfiguration führt Format-, Syntax- und Stilprüfungen sowie die
 Tests aus. Commit-Nachrichten müssen eine GitHub-Issue-Referenz wie `#1`
 enthalten.
+
+Details zu den serverseitigen Prüfungen, Releases und Container-Images stehen in
+der [CI/CD-Dokumentation](docs/ci-cd.md).
 
 ## Auslieferung
 
