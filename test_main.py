@@ -120,3 +120,29 @@ def test_database_uri_rejects_partial_environment(monkeypatch):
 
     with pytest.raises(RuntimeError, match="DBUSER"):
         main._database_uri()
+
+
+def test_database_uri_accepts_host_with_port(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("DBPORT", raising=False)
+    monkeypatch.setenv("DBUSER", "todo-user")
+    monkeypatch.setenv("DBPASS", "password")
+    monkeypatch.setenv("DBHOST", "database.example:6432")
+    monkeypatch.setenv("DBNAME", "todo-db")
+
+    uri = main._database_uri()
+
+    assert uri.host == "database.example"
+    assert uri.port == 6432
+
+
+def test_database_uri_rejects_conflicting_ports(monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("DBUSER", "todo-user")
+    monkeypatch.setenv("DBPASS", "password")
+    monkeypatch.setenv("DBHOST", "database.example:6432")
+    monkeypatch.setenv("DBPORT", "5432")
+    monkeypatch.setenv("DBNAME", "todo-db")
+
+    with pytest.raises(RuntimeError, match="conflicting ports"):
+        main._database_uri()

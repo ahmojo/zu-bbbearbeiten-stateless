@@ -40,6 +40,8 @@ enthalten.
 
 Details zu den serverseitigen Prüfungen, Releases und Container-Images stehen in
 der [CI/CD-Dokumentation](docs/ci-cd.md).
+Die produktive Azure-Umgebung und ihre geheimnislose Tag-Auslieferung sind in der
+[Azure-Dokumentation](docs/azure.md) beschrieben.
 
 ## Auslieferung
 

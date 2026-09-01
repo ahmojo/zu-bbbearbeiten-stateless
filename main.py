@@ -25,14 +25,23 @@ def _database_uri():
             raise RuntimeError(
                 "Incomplete database configuration: " + ", ".join(missing)
             )
+        host = values["DBHOST"]
+        port = os.getenv("DBPORT")
+        host_parts = host.rsplit(":", 1)
+        if len(host_parts) == 2 and host_parts[1].isdigit():
+            host, embedded_port = host_parts
+            if port and int(port) != int(embedded_port):
+                raise RuntimeError("DBHOST and DBPORT contain conflicting ports.")
+            port = embedded_port
+
         ssl_mode = os.getenv("DBSSLMODE", "prefer")
         query = {"sslmode": ssl_mode} if ssl_mode else {}
         return URL.create(
             "postgresql+psycopg2",
             username=values["DBUSER"],
             password=values["DBPASS"],
-            host=values["DBHOST"],
-            port=int(os.getenv("DBPORT", "5432")),
+            host=host,
+            port=int(port or "5432"),
             database=values["DBNAME"],
             query=query,
         )
